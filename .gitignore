@@ -1,0 +1,3 @@
+
+#Ignore the SQLite DB to avoid data breach
+*.db
