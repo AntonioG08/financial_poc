@@ -26,3 +26,16 @@ class ChecklistQuestion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     checklist_id = db.Column(db.Integer, db.ForeignKey("checklists.id"))
     question_id = db.Column(db.Integer, db.ForeignKey("questions.id"))
+
+class Factor(db.Model):
+    __tablename__ = "factors"
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(255), nullable=False, unique=True)
+    checklist_id = db.Column(db.Integer, db.ForeignKey("checklists.id"))
+
+class Reference(db.Model):
+    __tablename__ = "references"
+    id = db.Column(db.Integer, primary_key=True)
+    reference_title = db.Column(db.String(255), nullable=False, unique=True)
+    reference_url = db.Column(db.String(255), nullable=False, unique=True)
+    checklist_id = db.Column(db.Integer, db.ForeignKey("checklists.id"))

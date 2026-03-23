@@ -3,71 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Datos</title>
+    <title>Registro de Datos y Propiedades</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center">Registrar Nueva Interacción</h1>
-        <form id="dataForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Categoría</label>
-                <input type="text" id="category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Finanzas">
+<body class="bg-gray-100 min-h-screen p-6 flex flex-col items-center">
+    <div class="max-w-6xl w-full mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800 text-center">Panel de Registro y Enlaces</h1>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-lg ring-1 ring-gray-200 h-fit">
+                <h2 class="text-xl font-bold mb-5 text-indigo-700 border-b pb-2">1. Registrar Checklist y Pregunta</h2>
+                <form id="dataForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Categoría (ID ó Nombre)</label>
+                        <input type="text" id="category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Finanzas">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Checklist (ID ó Nombre)</label>
+                        <input type="text" id="checklist" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Gastos Mensuales">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Pregunta</label>
+                        <input type="text" id="question" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: ¿Gastaste en comida?">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Prompt / Valores</label>
+                        <textarea id="prompt" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" rows="3" placeholder="Ej: Especifica la cantidad..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                        Guardar Registro Base
+                    </button>
+                    <div id="msgData" class="mt-2 text-center text-sm hidden font-semibold"></div>
+                </form>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Checklist</label>
-                <input type="text" id="checklist" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Gastos Mensuales">
+
+            <div class="flex flex-col space-y-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg ring-1 ring-gray-200">
+                    <h2 class="text-xl font-bold mb-5 text-blue-700 border-b pb-2">2. Vincular Factor</h2>
+                    <form id="factorForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ID Padre del Checklist</label>
+                            <input type="number" id="fac_checklist_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Ej: 1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Etiqueta de Factor (Categoría)</label>
+                            <input type="text" id="fac_category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Ej: Riesgos Tecnológicos">
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition">
+                            Guardar Factor
+                        </button>
+                        <div id="msgFactor" class="mt-2 text-center text-sm hidden font-semibold"></div>
+                    </form>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg ring-1 ring-gray-200">
+                    <h2 class="text-xl font-bold mb-5 text-teal-700 border-b pb-2">3. Vincular Referencia</h2>
+                    <form id="refForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ID Padre del Checklist</label>
+                            <input type="number" id="ref_checklist_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 p-2 border" placeholder="Ej: 1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Título del Artículo o Docto</label>
+                            <input type="text" id="ref_title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 p-2 border" placeholder="Ej: Ley Mexicana 242">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Hipervínculo (URL)</label>
+                            <input type="url" id="ref_url" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 p-2 border" placeholder="https://biblioteca.com/doc">
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 transition">
+                            Guardar Referencia
+                        </button>
+                        <div id="msgRef" class="mt-2 text-center text-sm hidden font-semibold"></div>
+                    </form>
+                </div>
+
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Pregunta</label>
-                <input type="text" id="question" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: ¿Gastaste en comida?">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Prompt / Valores</label>
-                <textarea id="prompt" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" rows="3" placeholder="Ej: Especifica la cantidad..."></textarea>
-            </div>
-            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                Guardar
-            </button>
-            <div id="message" class="mt-4 text-center text-sm hidden font-semibold"></div>
-        </form>
+        </div>
     </div>
 
     <script>
-        document.getElementById('dataForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const messageDiv = document.getElementById('message');
-            messageDiv.className = 'mt-4 text-center text-sm hidden font-semibold';
-            
-            const payload = {
-                category: document.getElementById('category').value,
-                checklist: document.getElementById('checklist').value,
-                question: document.getElementById('question').value,
-                prompt: document.getElementById('prompt').value
-            };
-
+        async function submitForm(url, payload, msgElId, formId) {
+            const msgDiv = document.getElementById(msgElId);
+            msgDiv.className = 'mt-2 text-center text-sm hidden font-semibold';
             try {
-                const response = await fetch('/api/data', {
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const data = await response.json();
-
-                messageDiv.classList.remove('hidden');
-                if (response.ok) {
-                    messageDiv.classList.add('text-green-600');
-                    messageDiv.innerText = data.message || 'Exito!';
-                    document.getElementById('dataForm').reset();
+                const data = await res.json();
+                msgDiv.classList.remove('hidden');
+                if (res.ok) {
+                    msgDiv.classList.add('text-green-600');
+                    msgDiv.innerText = data.message || 'Exito!';
+                    document.getElementById(formId).reset();
                 } else {
-                    messageDiv.classList.add('text-red-500');
-                    messageDiv.innerText = data.error || 'Ocurrió un error';
+                    msgDiv.classList.add('text-red-500');
+                    msgDiv.innerText = data.error || 'Ocurrió un error al guardar';
                 }
             } catch (err) {
-                messageDiv.classList.remove('hidden');
-                messageDiv.classList.add('text-red-500');
-                messageDiv.innerText = 'Error de conexión';
+                msgDiv.classList.remove('hidden');
+                msgDiv.classList.add('text-red-500');
+                msgDiv.innerText = 'Error de conexión HTTP con el backend.';
             }
+        }
+
+        document.getElementById('dataForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let cat = document.getElementById('category').value;
+            let chk = document.getElementById('checklist').value;
+            cat = isNaN(cat) ? cat : parseInt(cat);
+            chk = isNaN(chk) ? chk : parseInt(chk);
+
+            const payload = {
+                category: cat,
+                checklist: chk,
+                question: document.getElementById('question').value,
+                prompt: document.getElementById('prompt').value
+            };
+            submitForm('/api/data', payload, 'msgData', 'dataForm');
+        });
+
+        document.getElementById('factorForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payload = {
+                checklist_id: parseInt(document.getElementById('fac_checklist_id').value),
+                category: document.getElementById('fac_category').value
+            };
+            submitForm('/api/factors', payload, 'msgFactor', 'factorForm');
+        });
+
+        document.getElementById('refForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payload = {
+                checklist_id: parseInt(document.getElementById('ref_checklist_id').value),
+                reference_title: document.getElementById('ref_title').value,
+                reference_url: document.getElementById('ref_url').value
+            };
+            submitForm('/api/references', payload, 'msgRef', 'refForm');
         });
     </script>
 </body>

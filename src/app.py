@@ -18,6 +18,8 @@ def get_all_data():
     checklists = models.Checklist.query.all()
     questions = models.Question.query.all()
     checklist_questions = models.ChecklistQuestion.query.all()
+    factors = models.Factor.query.all()
+    references = models.Reference.query.all()
 
     question_dict = {q.id: q for q in questions}
     checklist_q_map = {}
@@ -30,13 +32,33 @@ def get_all_data():
                 "question_text": q.text,
                 "prompt": q.prompt
             })
+            
+    checklist_f_map = {}
+    for f in factors:
+        if f.checklist_id not in checklist_f_map:
+            checklist_f_map[f.checklist_id] = []
+        checklist_f_map[f.checklist_id].append({
+            "category": f.category
+        })
+        
+    checklist_r_map = {}
+    for r in references:
+        if r.checklist_id not in checklist_r_map:
+            checklist_r_map[r.checklist_id] = []
+        checklist_r_map[r.checklist_id].append({
+            "reference_title": r.reference_title,
+            "reference_url": r.reference_url
+        })
+
     category_c_map = {}
     for c in checklists:
         if c.category_id not in category_c_map:
             category_c_map[c.category_id] = []
         category_c_map[c.category_id].append({
             "name": c.name,
-            "questions": checklist_q_map.get(c.id, [])
+            "questions": checklist_q_map.get(c.id, []),
+            "factors": checklist_f_map.get(c.id, []),
+            "references": checklist_r_map.get(c.id, [])
         })
     data = []
     for cat in categories:
@@ -105,6 +127,69 @@ def create_data():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Ocurrió un error en la transacción SQLite: {str(e)}"}), 500
+
+@app.route('/api/factors', methods=['POST'])
+def create_factor():
+    payload = request.get_json()
+    if not payload:
+        return jsonify({"error": "No JSON payload"}), 400
+        
+    category = payload.get('category')
+    checklist_id = payload.get('checklist_id')
+    
+    if not category or not checklist_id:
+        return jsonify({"error": "Faltan campos (category, checklist_id)"}), 400
+        
+    try:
+        checklist = models.Checklist.query.get(checklist_id)
+        if not checklist:
+            return jsonify({"error": "Checklist no encontrado"}), 404
+            
+        factor = models.Factor.query.filter_by(category=category).first()
+        if not factor:
+            factor = models.Factor(category=category, checklist_id=checklist_id)
+            db.session.add(factor)
+            db.session.commit()
+            return jsonify({"message": "Factor registrado exitosamente"}), 201
+        else:
+            return jsonify({"error": "El factor con esa category ya existe"}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/references', methods=['POST'])
+def create_reference():
+    payload = request.get_json()
+    if not payload:
+        return jsonify({"error": "No JSON payload"}), 400
+        
+    ref_title = payload.get('reference_title')
+    ref_url = payload.get('reference_url')
+    checklist_id = payload.get('checklist_id')
+    
+    if not ref_title or not ref_url or not checklist_id:
+        return jsonify({"error": "Faltan campos (reference_title, reference_url, checklist_id)"}), 400
+        
+    try:
+        checklist = models.Checklist.query.get(checklist_id)
+        if not checklist:
+            return jsonify({"error": "Checklist no encontrado"}), 404
+            
+        ref_by_title = models.Reference.query.filter_by(reference_title=ref_title).first()
+        if ref_by_title:
+            return jsonify({"error": "Ya existe una referencia con ese título"}), 400
+            
+        ref_by_url = models.Reference.query.filter_by(reference_url=ref_url).first()
+        if ref_by_url:
+            return jsonify({"error": "Ya existe una referencia con esa URL"}), 400
+            
+        ref = models.Reference(reference_title=ref_title, reference_url=ref_url, checklist_id=checklist_id)
+        db.session.add(ref)
+        db.session.commit()
+        return jsonify({"message": "Reference registrado exitosamente"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/registro', methods=['GET'])
 def registro_page():
