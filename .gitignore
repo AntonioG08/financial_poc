@@ -1,3 +1,8 @@
-
 #Ignore the SQLite DB to avoid data breach
 *.db
+
+#Ignore the virtual environment
+env/
+
+#Ignore the __pycache__ directory
+__pycache__/

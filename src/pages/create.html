@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center">Registrar Nueva Interacción</h1>
+        <form id="dataForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Categoría</label>
+                <input type="text" id="category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Finanzas">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Checklist</label>
+                <input type="text" id="checklist" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: Gastos Mensuales">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Pregunta</label>
+                <input type="text" id="question" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Ej: ¿Gastaste en comida?">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Prompt / Valores</label>
+                <textarea id="prompt" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" rows="3" placeholder="Ej: Especifica la cantidad..."></textarea>
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                Guardar
+            </button>
+            <div id="message" class="mt-4 text-center text-sm hidden font-semibold"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'mt-4 text-center text-sm hidden font-semibold';
+            
+            const payload = {
+                category: document.getElementById('category').value,
+                checklist: document.getElementById('checklist').value,
+                question: document.getElementById('question').value,
+                prompt: document.getElementById('prompt').value
+            };
+
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                messageDiv.classList.remove('hidden');
+                if (response.ok) {
+                    messageDiv.classList.add('text-green-600');
+                    messageDiv.innerText = data.message || 'Exito!';
+                    document.getElementById('dataForm').reset();
+                } else {
+                    messageDiv.classList.add('text-red-500');
+                    messageDiv.innerText = data.error || 'Ocurrió un error';
+                }
+            } catch (err) {
+                messageDiv.classList.remove('hidden');
+                messageDiv.classList.add('text-red-500');
+                messageDiv.innerText = 'Error de conexión';
+            }
+        });
+    </script>
+</body>
+</html>

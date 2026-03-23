@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Registros Almacenados</h1>
+        
+        <div id="loader" class="text-center text-gray-600">
+            Cargando la información...
+        </div>
+
+        <div id="results" class="space-y-6 hidden">
+            <!-- Data will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const response = await fetch('/api/data');
+                const result = await response.json();
+                
+                document.getElementById('loader').classList.add('hidden');
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.classList.remove('hidden');
+
+                if (!result.data || result.data.length === 0) {
+                    resultsDiv.innerHTML = '<div class="text-center p-6 bg-white rounded-lg shadow text-gray-500">No hay datos disponibles aún. ¡Agrega algunos!</div>';
+                    return;
+                }
+
+                let html = '';
+                result.data.forEach(category => {
+                    html += `<div class="bg-white overflow-hidden shadow rounded-lg mb-6">`;
+                    html += `<div class="px-4 py-5 sm:px-6 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
+                                 <h2 class="text-xl leading-6 font-bold text-indigo-800">Categoría: ${category.category}</h2>
+                             </div>`;
+                    
+                    if (category.checklists && category.checklists.length > 0) {
+                        html += `<div class="p-6 space-y-6">`;
+                        category.checklists.forEach(checklist => {
+                            html += `<div>
+                                        <h3 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Checklist: <span class="text-indigo-600">${checklist.name}</span></h3>
+                                        <ul class="space-y-3">`;
+                                        
+                            if (checklist.questions && checklist.questions.length > 0) {
+                                checklist.questions.forEach(q => {
+                                    html += `<li class="bg-gray-50 p-4 rounded-md border border-gray-200 hover:bg-gray-100 transition">
+                                                <p class="font-medium text-gray-800 mb-1"><span class="font-bold text-indigo-500">Q:</span> ${q.question_text}</p>
+                                                <p class="text-sm text-gray-500"><span class="font-semibold">Prompt:</span> ${q.prompt}</p>
+                                             </li>`;
+                                });
+                            } else {
+                                html += `<li class="text-sm text-gray-400">Sin preguntas asignadas</li>`;
+                            }
+                            
+                            html += `   </ul>
+                                     </div>`;
+                        });
+                        html += `</div>`;
+                    } else {
+                        html += `<div class="p-4 text-sm text-gray-500">Esta categoría no tiene checklists.</div>`;
+                    }
+                    html += `</div>`;
+                });
+
+                resultsDiv.innerHTML = html;
+
+            } catch (err) {
+                document.getElementById('loader').innerText = 'Error al cargar los datos. Verifica la API.';
+                document.getElementById('loader').classList.add('text-red-500', 'font-bold');
+            }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
